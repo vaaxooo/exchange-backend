@@ -194,16 +194,6 @@ class AuthService
 	 */
 	public function verifyCodeEmail()
 	{
-		$validator = Validator::make(request()->all(), [
-			'code' => 'required|string',
-		]);
-		if ($validator->fails()) {
-			return response()->json([
-				'code' => 400,
-				'message' => $validator->errors(),
-				'status' => 'error'
-			]);
-		}
 		$user = User::where('email', auth()->user()->email)->first();
 		if (!$user) {
 			return response()->json([
@@ -217,7 +207,7 @@ class AuthService
 		$user->verification_code = $code;
 		$user->save();
 
-		Mail::to(auth()->user()->email)->send(new VerifyEmail(auth()->user()->email, $code));
+		Mail::to(auth()->user()->email)->send(new VerifyEmail($code));
 
 		return response()->json([
 			'code' => 200,
