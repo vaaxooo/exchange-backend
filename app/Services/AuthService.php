@@ -139,7 +139,7 @@ class AuthService
 				'status' => 'error'
 			];
 		}
-		return ([
+		return [
 			'code' => 200,
 			'message' => 'Code is correct',
 			'status' => 'success'
@@ -158,7 +158,7 @@ class AuthService
 			'password' => 'required|string',
 		]);
 		if ($validator->fails()) {
-			return ([
+			return [
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
@@ -173,7 +173,7 @@ class AuthService
 			];
 		}
 		if ($user->recovery_code != request('code')) {
-			return ([
+			return [
 				'code' => 400,
 				'message' => 'Code is wrong',
 				'status' => 'error'
@@ -182,7 +182,7 @@ class AuthService
 		$user->password = bcrypt(request('password'));
 		$user->recovery_code = null;
 		$user->save();
-		return ([
+		return [
 			'code' => 200,
 			'message' => 'Password has been changed',
 			'status' => 'success'
@@ -209,7 +209,7 @@ class AuthService
 
 		Mail::to(auth()->user()->email)->send(new VerifyEmail($code));
 
-		return ([
+		return [
 			'code' => 200,
 			'message' => 'Verification code has been sent to your email',
 			'status' => 'success'
@@ -228,7 +228,7 @@ class AuthService
 			'code' => 'required|string',
 		]);
 		if ($validator->fails()) {
-			return ([
+			return [
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
