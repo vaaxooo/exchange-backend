@@ -32,7 +32,7 @@ Route::group(['middleware' => ['api']], function ($route) {
 
         # EMAIL VERIFICATION
         Route::post('verification/send', '\App\Http\Controllers\AuthController@verifyCodeEmail');
-        Route::post('verification/check', '\App\Http\Controllers\AuthController@verifyCode');
+        Route::post('verification/check', '\App\Http\Controllers\AuthController@verifyEmail');
 
 
         # PASSWORD RESET
