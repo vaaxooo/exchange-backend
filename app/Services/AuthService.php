@@ -78,29 +78,29 @@ class AuthService
 			'email' => 'required|string|email',
 		]);
 		if ($validator->fails()) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
-			]);
+			];
 		}
 		$user = User::where('email', request('email'))->first();
 		if (!$user) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'User not found',
 				'status' => 'error'
-			]);
+			];
 		}
 		$code = md5(date('Y-m-d H:i:s') . ':' . rand(100000, 999999));
 		$user->recovery_code = $code;
 		$user->save();
 		Mail::to(request('email'))->send(new RecoveryPassword(request('email'), $code));
-		return response()->json([
+		return [
 			'code' => 200,
 			'message' => 'Recovery code has been sent to your email',
 			'status' => 'success'
-		]);
+		];
 	}
 
 	/**
@@ -118,32 +118,32 @@ class AuthService
 			'code' => 'required|string',
 		]);
 		if ($validator->fails()) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
-			]);
+			];
 		}
 		$user = User::where('email', request('email'))->first();
 		if (!$user) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'User not found',
 				'status' => 'error'
-			]);
+			];
 		}
 		if ($user->recovery_code != request('code')) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'Code is wrong',
 				'status' => 'error'
-			]);
+			];
 		}
-		return response()->json([
+		return ([
 			'code' => 200,
 			'message' => 'Code is correct',
 			'status' => 'success'
-		]);
+		];
 	}
 
 	/**
@@ -158,35 +158,35 @@ class AuthService
 			'password' => 'required|string',
 		]);
 		if ($validator->fails()) {
-			return response()->json([
+			return ([
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
-			]);
+			];
 		}
 		$user = User::where('email', request('email'))->first();
 		if (!$user) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'User not found',
 				'status' => 'error'
-			]);
+			];
 		}
 		if ($user->recovery_code != request('code')) {
-			return response()->json([
+			return ([
 				'code' => 400,
 				'message' => 'Code is wrong',
 				'status' => 'error'
-			]);
+			];
 		}
 		$user->password = bcrypt(request('password'));
 		$user->recovery_code = null;
 		$user->save();
-		return response()->json([
+		return ([
 			'code' => 200,
 			'message' => 'Password has been changed',
 			'status' => 'success'
-		]);
+		];
 	}
 
 	/**
@@ -196,11 +196,11 @@ class AuthService
 	{
 		$user = User::where('email', auth()->user()->email)->first();
 		if (!$user) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'User not found',
 				'status' => 'error'
-			]);
+			];
 		}
 
 		$code = md5(date('Y-m-d H:i:s') . ':' . rand(100000, 999999));
@@ -209,11 +209,11 @@ class AuthService
 
 		Mail::to(auth()->user()->email)->send(new VerifyEmail($code));
 
-		return response()->json([
+		return ([
 			'code' => 200,
 			'message' => 'Verification code has been sent to your email',
 			'status' => 'success'
-		]);
+		];
 	}
 
 	/**
@@ -228,34 +228,34 @@ class AuthService
 			'code' => 'required|string',
 		]);
 		if ($validator->fails()) {
-			return response()->json([
+			return ([
 				'code' => 400,
 				'message' => $validator->errors(),
 				'status' => 'error'
-			]);
+			];
 		}
 		$user = User::where('email', auth()->user()->email)->first();
 		if (!$user) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'User not found',
 				'status' => 'error'
-			]);
+			];
 		}
 		if ($user->verification_code != request('code')) {
-			return response()->json([
+			return [
 				'code' => 400,
 				'message' => 'Code is wrong',
 				'status' => 'error'
-			]);
+			];
 		}
 		$user->verification_code = null;
 		$user->save();
-		return response()->json([
+		return [
 			'code' => 200,
 			'message' => 'Email has been verified',
 			'status' => 'success'
-		]);
+		];
 	}
 
 	/**
