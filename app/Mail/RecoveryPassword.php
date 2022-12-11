@@ -35,7 +35,7 @@ class RecoveryPassword extends Mailable
 		return $this->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
 			->view('mails.recovery_password')
 			->with([
-				'link' => env('FRONT_URL') . '/auth/recovery/reset-password?email=' . $this->email . '&code=' . $this->code,
+				'link' => 'https://exchange.telantes.net/auth/recovery/reset-password?email=' . $this->email . '&code=' . $this->code,
 				'site' =>  config('app.name')
 			]);
 	}
