@@ -107,6 +107,11 @@ class TransactionService
 			'type' => $request->type,
 		]);
 
+		if ($request->type == 'buy') {
+			$request->user()->update([
+				'balance' => $request->user()->balance - $request->amountFrom
+			]);
+		}
 		if ($request->type == 'sell') {
 			CoinWallet::where('user_id', $request->user()->id)->where('coin_id', $coinFrom->id)->update([
 				'balance' => $wallet->balance - $request->amountFrom
