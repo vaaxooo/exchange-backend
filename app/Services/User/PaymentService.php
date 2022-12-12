@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\Payments;
+use App\Models\PayMethod;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
@@ -140,6 +141,21 @@ class PaymentService
 			'code' => 200,
 			'message' => 'Withdrawal created successfully',
 			'data' => $payment
+		];
+	}
+
+	/**
+	 * It fetches all the active payment methods from the database
+	 * 
+	 * @return An array with a code, message, and data.
+	 */
+	public function getPayMethods()
+	{
+		$methods = PayMethod::where('is_active', true)->get();
+		return [
+			'code' => 200,
+			'message' => 'Pay methods fetched successfully',
+			'data' => $methods
 		];
 	}
 }

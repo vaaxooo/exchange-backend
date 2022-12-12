@@ -63,4 +63,14 @@ class PaymentController extends Controller
 	{
 		return response()->json($this->payments->createWithdrawal($request));
 	}
+
+	/**
+	 * It returns a JSON response of the results of the `getPayMethods` function in the `Payments` class
+	 * 
+	 * @return The response is being returned as a JSON object.
+	 */
+	public function getPayMethods()
+	{
+		return response()->json($this->payments->getPayMethods());
+	}
 }

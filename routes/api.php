@@ -72,6 +72,10 @@ Route::group(['middleware' => ['api']], function ($route) {
 
             # CONTACTS
             Route::resource('contacts', '\App\Http\Controllers\Admin\ContactController');
+
+            # PAY METHODS
+            Route::get('pay-methods/{payMethod}/active', '\App\Http\Controllers\Admin\PayMethodController@active');
+            Route::resource('pay-methods', '\App\Http\Controllers\Admin\PayMethodController');
         });
     });
 
@@ -91,6 +95,8 @@ Route::group(['middleware' => ['api']], function ($route) {
         Route::get('payments/deposits', '\App\Http\Controllers\User\PaymentController@getDeposits');
         Route::post('payments/withdrawal', '\App\Http\Controllers\User\PaymentController@createWithdrawal');
         Route::post('payments/deposit', '\App\Http\Controllers\User\PaymentController@createDeposit');
+
+        Route::get('payments/methods', '\App\Http\Controllers\User\PaymentController@getPayMethods');
 
         # WALLETS
         Route::get('wallets', '\App\Http\Controllers\User\CoinController@wallets');
