@@ -13,12 +13,12 @@ class Coin extends Model
         'name',
         'symbol',
         'exchange_rate',
-        'network_fee',
         'fee',
         'min_amount',
         'max_amount',
         'is_active',
-        'wallet'
+        'wallet',
+        'reserve',
     ];
 
     protected $casts = [

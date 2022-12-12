@@ -26,6 +26,21 @@ class CoinService
 	}
 
 	/**
+	 * > This function returns a 200 status code and the data of the coin
+	 * 
+	 * @param coin The coin's symbol.
+	 * 
+	 * @return An array with a code and data key.
+	 */
+	public function show($coin)
+	{
+		return [
+			'code' => 200,
+			'data' => $coin,
+		];
+	}
+
+	/**
 	 * It creates a new coin
 	 * 
 	 * @param request The request object
@@ -37,8 +52,6 @@ class CoinService
 		$validator = Validator::make($request->all(), [
 			'name' => 'required|string|max:255',
 			'symbol' => 'required|string|max:5',
-			'exchage_rate' => 'required|numeric',
-			'network_fee' => 'required|numeric',
 			'fee' => 'required|numeric',
 			'reserve' => 'required|numeric',
 			'min_amount' => 'required|numeric',
@@ -47,14 +60,21 @@ class CoinService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'data' => $validator->errors(),
+				'errors' => $validator->errors(),
 			];
 		}
+
+		if (empty($request->exchange_rate)) {
+			$rate = @file_get_contents("https://www.binance.com/api/v3/depth?symbol=" . strtoupper($request->symbol) . "USDT&limit=1");
+			$rate = json_decode($rate);
+			$rate = $rate->bids[0][0];
+			$request->merge(['exchange_rate' => $rate]);
+		}
+
 		$coin = Coin::create([
 			'name' => $request->name,
 			'symbol' => strtolower($request->symbol),
-			'exchage_rate' => $request->exchage_rate,
-			'network_fee' => $request->network_fee,
+			'exchange_rate' => $request->exchange_rate,
 			'fee' => $request->fee,
 			'reserve' => $request->reserve,
 			'min_amount' => $request->min_amount,
@@ -79,8 +99,6 @@ class CoinService
 		$validator = Validator::make($request->all(), [
 			'name' => 'required|string|max:255',
 			'symbol' => 'required|string|max:5',
-			'exchage_rate' => 'required|numeric',
-			'network_fee' => 'required|numeric',
 			'fee' => 'required|numeric',
 			'reserve' => 'required|numeric',
 			'min_amount' => 'required|numeric',
@@ -89,14 +107,13 @@ class CoinService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'data' => $validator->errors(),
+				'errors' => $validator->errors(),
 			];
 		}
 		$coin->update([
 			'name' => $request->name,
-			'symbol' => strtolower($request->symbol),
-			'exchage_rate' => $request->exchage_rate,
-			'network_fee' => $request->network_fee,
+			'symbol' => strtoupper($request->symbol),
+			'exchange_rate' => $request->exchange_rate,
 			'fee' => $request->fee,
 			'reserve' => $request->reserve,
 			'min_amount' => $request->min_amount,
@@ -134,8 +151,7 @@ class CoinService
 	 */
 	public function active($coin)
 	{
-		$coin->active = !$coin->active;
-		$coin->save();
+		Coin::where('id', $coin->id)->update(['is_active' => !$coin->is_active]);
 		return [
 			'code' => 200,
 			'message' => 'Coin status updated successfully',

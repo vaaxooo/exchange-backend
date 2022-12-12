@@ -21,11 +21,10 @@ return new class extends Migration
             $table->double('amountFrom');
             $table->double('amountTo');
             $table->double('rate');
-            $table->string('wallet');
-            $table->string('email')->nullable();
             $table->string('status')->default('pending');
             $table->string('hash')->unique();
             $table->string('type')->default('buy');
+            $table->string('comment')->nullable();
             $table->timestamps();
         });
 

@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\Page;
+use App\Models\Contact;
 
 class PageService
 {
@@ -30,12 +31,28 @@ class PageService
 	 * 
 	 * @return An array with a code, message, and data.
 	 */
-	public function show(Page $page)
+	public function show($page)
 	{
+		$page = Page::where('slug', $page)->where('is_published', true)->first();
 		return [
 			'code'    => 200,
 			'message' => 'Page fetched successfully',
 			'data'    => $page
+		];
+	}
+
+	/**
+	 * It fetches all contacts from the database and returns them in a JSON response
+	 * 
+	 * @return An array with three keys: code, message, and data.
+	 */
+	public function getContacts()
+	{
+		$contacts = Contact::all();
+		return [
+			'code'    => 200,
+			'message' => 'Contacts fetched successfully',
+			'data'    => $contacts
 		];
 	}
 }

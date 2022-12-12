@@ -26,25 +26,22 @@ class UserService
 		]);
 		if ($validator->fails()) {
 			return [
+				'code' => 400,
 				'status' => 'error',
-				'message' => $validator->errors()
+				'errors' => $validator->errors()
 			];
 		}
 		if ($request->oldPassword == $request->newPassword) {
 			return [
+				'code' => 400,
 				'status' => 'error',
 				'message' => 'Old password and new password cannot be the same'
-			];
-		}
-		if ($request->newPassword != $request->confirmPassword) {
-			return [
-				'status' => 'error',
-				'message' => 'New password and confirm password do not match'
 			];
 		}
 		$user = User::find($request->user()->id);
 		if (!Hash::check($request->oldPassword, $user->password)) {
 			return [
+				'code' => 400,
 				'status' => 'error',
 				'message' => 'Old password is incorrect'
 			];
@@ -53,6 +50,7 @@ class UserService
 		$user->password = Hash::make($request->newPassword);
 		$user->save();
 		return [
+			'code' => 200,
 			'status' => 'success',
 			'message' => 'Password changed successfully'
 		];

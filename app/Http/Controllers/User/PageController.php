@@ -34,8 +34,18 @@ class PageController extends Controller
 	 * 
 	 * @return The show method is returning a JSON response.
 	 */
-	public function show(Page $page)
+	public function show($page)
 	{
 		return response()->json($this->pages->show($page));
+	}
+
+	/**
+	 * It returns a JSON response of the result of the `getContacts` function in the `Pages` class
+	 * 
+	 * @return A JSON response.
+	 */
+	public function getContacts()
+	{
+		return response()->json($this->pages->getContacts());
 	}
 }

@@ -17,7 +17,7 @@ class TransactionService
 	public function index($request)
 	{
 		$per_page = $request->per_page ?? 15;
-		$transactions = Transaction::with('user')->orderBy('created_at', 'desc')->paginate($per_page);
+		$transactions = Transaction::with('user')->with('coinFrom')->with('coinTo')->orderBy('created_at', 'desc')->paginate($per_page);
 		return [
 			'code' => 200,
 			'message' => 'Transactions fetched successfully.',
@@ -34,6 +34,7 @@ class TransactionService
 	 */
 	public function show($transaction)
 	{
+		$transaction = Transaction::with('user')->with('coinFrom')->with('coinTo')->find($transaction->id);
 		return [
 			'code' => 200,
 			'message' => 'Transaction fetched successfully.',
@@ -90,7 +91,8 @@ class TransactionService
 	public function setStatus($request, $transaction)
 	{
 		$transaction->update([
-			'status' => $request->status
+			'status' => $request->status,
+			'comment' => $request->comment
 		]);
 		return [
 			'code' => 200,

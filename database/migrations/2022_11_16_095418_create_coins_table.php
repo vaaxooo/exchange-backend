@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('min_amount')->default(0);
             $table->string('max_amount')->default(0);
             $table->boolean('is_active')->default(true);
-            $table->string('wallet');
+            $table->string('wallet')->nullable();
             $table->string('reserve')->nullable();
             $table->timestamps();
         });

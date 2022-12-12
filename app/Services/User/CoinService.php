@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\Coin;
+use App\Models\CoinWallet;
 
 class CoinService
 {
@@ -42,6 +43,21 @@ class CoinService
 		return [
 			'code' => 200,
 			'data' => $coin
+		];
+	}
+
+	/**
+	 * It returns a list of wallets for the currently logged in user
+	 * 
+	 * @return A collection of wallets with the coin data.
+	 */
+	public function wallets()
+	{
+		$per_page = request()->per_page ? request()->per_page : 10;
+		$wallets = CoinWallet::where('user_id', auth()->user()->id)->with('coin')->paginate($per_page);
+		return [
+			'code' => 200,
+			'data' => $wallets
 		];
 	}
 }

@@ -16,11 +16,10 @@ class Transaction extends Model
         'amountFrom',
         'amountTo',
         'rate',
-        'wallet',
-        'email',
         'status',
         'hash',
-        'type'
+        'type',
+        'comment'
     ];
 
     /**

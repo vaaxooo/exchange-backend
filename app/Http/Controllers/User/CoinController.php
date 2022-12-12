@@ -41,4 +41,15 @@ class CoinController extends Controller
 	{
 		return response()->json($this->coinService->getCoin($id));
 	}
+
+	/**
+	 * It returns a JSON response of the wallets array from the CoinService class
+	 * 
+	 * @return The wallets method is returning a json response of the wallets method in the coinService
+	 * class.
+	 */
+	public function wallets()
+	{
+		return response()->json($this->coinService->wallets());
+	}
 }

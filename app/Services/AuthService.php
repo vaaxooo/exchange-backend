@@ -160,7 +160,7 @@ class AuthService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'message' => $validator->errors(),
+				'errors' => $validator->errors(),
 				'status' => 'error'
 			];
 		}
@@ -230,7 +230,7 @@ class AuthService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'message' => $validator->errors(),
+				'errors' => $validator->errors(),
 				'status' => 'error'
 			];
 		}

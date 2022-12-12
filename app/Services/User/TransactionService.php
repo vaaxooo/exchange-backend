@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\Coin;
+use App\Models\CoinWallet;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Validator;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -37,7 +38,7 @@ class TransactionService
 			'coinFrom' => 'required',
 			'coinTo' => 'required',
 			'amountFrom' => 'required',
-			'wallet' => 'required'
+			'type' => 'required'
 		]);
 		if ($validator->fails()) {
 			return [
@@ -46,51 +47,82 @@ class TransactionService
 				'data' => $validator->errors()
 			];
 		}
-		$coinFrom = Coin::where('id', $request->coinFrom)->first();
-		$coinTo = Coin::where('id', $request->coinTo)->first();
+		$coinFrom = Coin::where('symbol', $request->coinFrom)->first();
+		$coinTo = Coin::where('symbol', $request->coinTo)->first();
 		if ($coinFrom->id == $coinTo->id) {
 			return [
 				'code' => 400,
 				'message' => 'You cannot convert the same coin to itself',
 			];
 		}
-		if ($request->amountFrom < $coinFrom->min_amount) {
-			return [
-				'code' => 400,
-				'message' => 'The minimum amount you can convert is ' . $coinFrom->min_amount . ' ' . $coinFrom->name,
-			];
+		// if ($request->amountFrom < $coinFrom->min_amount) {
+		// 	return [
+		// 		'code' => 400,
+		// 		'message' => 'The minimum amount you can convert is ' . $coinFrom->min_amount . ' ' . $coinFrom->name,
+		// 	];
+		// }
+		// if ($request->amountFrom > $coinFrom->max_amount) {
+		// 	return [
+		// 		'code' => 400,
+		// 		'message' => 'The maximum amount you can convert is ' . $coinFrom->max_amount . ' ' . $coinFrom->name,
+		// 	];
+		// }
+
+		if ($request->type == 'buy') {
+			if (auth()->user()->balance < $request->amountFrom) {
+				return [
+					'code' => 400,
+					'message' => 'You do not have enough balance to convert',
+				];
+			}
+		} else {
+			$wallet = auth()->user()->wallets()->where('coin_id', $coinFrom->id)->first();
+			if (!$wallet) {
+				return [
+					'code' => 400,
+					'message' => 'You do not have a wallet for this coin',
+				];
+			}
+			if ($wallet->balance < $request->amountFrom) {
+				return [
+					'code' => 400,
+					'message' => 'You do not have enough balance to convert',
+				];
+			}
 		}
-		if ($request->amountFrom > $coinFrom->max_amount) {
-			return [
-				'code' => 400,
-				'message' => 'The maximum amount you can convert is ' . $coinFrom->max_amount . ' ' . $coinFrom->name,
-			];
-		}
+
 
 		$rate = $coinFrom->exchange_rate / $coinTo->exchange_rate;
 		$amountTo = $request->amountFrom * $rate;
-		$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . $request->wallet . time());
+		$amountTo = $amountTo - ($amountTo * $coinTo->fee / 100);
+		$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . time());
 		$transaction = Transaction::create([
-			'coinFrom' => $request->coinFrom,
-			'coinTo' => $request->coinTo,
+			'user_id' => $request->user()->id,
+			'coinFrom' => $coinFrom->id,
+			'coinTo' => $coinTo->id,
 			'amountFrom' => $request->amountFrom,
 			'amountTo' => $amountTo,
 			'rate' => $coinTo->exchange_rate,
-			'wallet' => $request->wallet,
-			'email' => $request->email,
-			'hash' => $hash
+			'hash' => $hash,
+			'type' => $request->type,
 		]);
 
-		$message = "Новая заявка!\n";
-		$message .= "Отдаёт: {$request->amountFrom} ({$coinFrom->symbol})\n";
-		$message .= "Получает: {$amountTo} ({$coinTo->symbol})\n";
-		$message .= "Кошелёк получателя: {$request->wallet}\n";
-		$message .= "Почта: {$request->email}\n";
-		$message .= "Hash: {$hash}\n";
-		Telegram::sendMessage([
-			'chat_id' => config('app.TELEGRAM_CHAT_ID'),
-			'text' => $message
-		]);
+		if ($request->type == 'sell') {
+			CoinWallet::where('user_id', $request->user()->id)->where('coin_id', $coinFrom->id)->update([
+				'balance' => $wallet->balance - $request->amountFrom
+			]);
+		}
+
+		// $message = "Новая заявка!\n";
+		// $message .= "Отдаёт: {$request->amountFrom} ({$coinFrom->symbol})\n";
+		// $message .= "Получает: {$amountTo} ({$coinTo->symbol})\n";
+		// $message .= "Кошелёк получателя: {$request->wallet}\n";
+		// $message .= "Почта: {$request->email}\n";
+		// $message .= "Hash: {$hash}\n";
+		// Telegram::sendMessage([
+		// 	'chat_id' => config('app.TELEGRAM_CHAT_ID'),
+		// 	'text' => $message
+		// ]);
 
 		return [
 			'code' => 200,

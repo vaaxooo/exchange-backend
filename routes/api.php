@@ -49,31 +49,51 @@ Route::group(['middleware' => ['api']], function ($route) {
             Route::resource('coins', '\App\Http\Controllers\Admin\CoinController');
 
             # USERS
+            Route::get('users/{user}/wallets', '\App\Http\Controllers\Admin\UserController@getWallets');
+            Route::post('users/{user}/wallets/set-balance', '\App\Http\Controllers\Admin\UserController@setWalletBalance');
+
             Route::get('users/{user}/ban', '\App\Http\Controllers\Admin\UserController@boolBan');
             Route::post('users/{user}/balance', '\App\Http\Controllers\Admin\UserController@setBalance');
             Route::post('users/{user}/change-password', '\App\Http\Controllers\Admin\UserController@changePassword');
             Route::resource('users', '\App\Http\Controllers\Admin\UserController');
 
             # TRANSACTIONS
-            Route::post('transactions/{transaction}/setStatus', '\App\Http\Controllers\Admin\TransactionController@setStatus');
+            Route::post('transactions/{transaction}/set-status', '\App\Http\Controllers\Admin\TransactionController@setStatus');
             Route::resource('transactions', '\App\Http\Controllers\Admin\TransactionController');
 
             # PAGES
             Route::get('pages/{page}/active', '\App\Http\Controllers\Admin\PageController@active');
             Route::resource('pages', '\App\Http\Controllers\Admin\PageController');
+
+            # PAYMENTS
+            Route::post('payments/{payment}/set-status', '\App\Http\Controllers\Admin\PaymentController@setStatus');
+            Route::get('payments', '\App\Http\Controllers\Admin\PaymentController@getDeposits');
+            Route::get('payments/{payment}', '\App\Http\Controllers\Admin\PaymentController@show');
+
+            # CONTACTS
+            Route::resource('contacts', '\App\Http\Controllers\Admin\ContactController');
         });
     });
 
 
     # USER API ROUTES
-    Route::group(['middleware' => ['ban', 'verify_email']], function () {
+    Route::group(['middleware' => ['ban', 'email']], function () {
         Route::get(
             'transactions',
             '\App\Http\Controllers\User\TransactionController@getTransactions'
         );
         Route::post('transactions', '\App\Http\Controllers\User\TransactionController@createTransaction');
 
-        Route::post('users/change-password', '\App\Http\Controllers\User\UserController@changePassword');
+        Route::post('user/change-password', '\App\Http\Controllers\User\UserController@changePassword');
+
+        # PAYMENTS
+        Route::get('payments/withdrawals', '\App\Http\Controllers\User\PaymentController@getWithdrawals');
+        Route::get('payments/deposits', '\App\Http\Controllers\User\PaymentController@getDeposits');
+        Route::post('payments/withdrawal', '\App\Http\Controllers\User\PaymentController@createWithdrawal');
+        Route::post('payments/deposit', '\App\Http\Controllers\User\PaymentController@createDeposit');
+
+        # WALLETS
+        Route::get('wallets', '\App\Http\Controllers\User\CoinController@wallets');
     });
 });
 
@@ -87,3 +107,5 @@ Route::get('transactions/{hash}', '\App\Http\Controllers\User\TransactionControl
 
 Route::get('pages', '\App\Http\Controllers\User\PageController@index');
 Route::get('pages/{slug}', '\App\Http\Controllers\User\PageController@show');
+
+Route::get('get-contacts', '\App\Http\Controllers\User\PageController@getContacts');

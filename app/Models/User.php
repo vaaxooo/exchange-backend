@@ -58,4 +58,24 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * > The `payments()` function returns all the payments that belong to a particular user
+     * 
+     * @return A collection of all the payments associated with the user.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payments::class);
+    }
+
+    /**
+     * > The `wallets()` function returns all the wallets that belong to a particular user
+     * 
+     * @return A collection of all the wallets associated with the user.
+     */
+    public function wallets()
+    {
+        return $this->hasMany(CoinWallet::class);
+    }
 }

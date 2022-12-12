@@ -3,7 +3,9 @@
 namespace App\Services\Admin;
 
 use App\Models\User;
+use App\Models\Coin;
 use Illuminate\Support\Facades\Validator;
+use App\Models\CoinWallet;
 
 class UserService
 {
@@ -61,7 +63,7 @@ class UserService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'data' => $validator->errors(),
+				'errors' => $validator->errors(),
 			];
 		}
 		$user->email = $request->email;
@@ -126,7 +128,7 @@ class UserService
 		if ($validator->fails()) {
 			return [
 				'code' => 400,
-				'data' => $validator->errors(),
+				'errors' => $validator->errors(),
 			];
 		}
 		$user->password = bcrypt($request->password);
@@ -159,6 +161,73 @@ class UserService
 		}
 		$user->balance = $request->amount;
 		$user->save();
+		return [
+			'code' => 200,
+			'message' => 'Balance updated',
+		];
+	}
+
+	/**
+	 * It gets all the coins, then gets all the wallets for the user, then returns the wallets
+	 * 
+	 * @param request The request object
+	 * @param user The user object that is currently logged in.
+	 * 
+	 * @return An array of wallets.
+	 */
+	public function getWallets($request, $user)
+	{
+		$coins = Coin::get();
+		$wallets = [];
+		foreach ($coins as $coin) {
+			$wallet = $user->wallets()->with('coin')->where('coin_id', $coin->id)->first();
+			if ($wallet) {
+				$wallets[] = $wallet;
+			} else {
+				$wallets[] = [
+					'coin_id' => $coin->id,
+					'coin' => $coin,
+					'balance' => 0,
+				];
+			}
+		}
+		return [
+			'code' => 200,
+			'data' => $wallets,
+		];
+	}
+
+	/**
+	 * It takes a user and a request, validates the request, and then updates the user's wallet balance
+	 * 
+	 * @param request The request object
+	 * @param user The user object
+	 * 
+	 * @return An array with a code and a message.
+	 */
+	public function setWalletBalance($request, $user)
+	{
+		$validator = Validator::make($request->all(), [
+			'coin_id' => 'required|numeric',
+			'amount' => 'required|numeric',
+		]);
+		if ($validator->fails()) {
+			return [
+				'code' => 400,
+				'data' => $validator->errors(),
+			];
+		}
+		$wallet = $user->wallets()->where('coin_id', $request->coin_id)->first();
+		if ($wallet) {
+			$wallet->balance = $request->amount;
+			$wallet->save();
+		} else {
+			$wallet = new CoinWallet;
+			$wallet->user_id = $user->id;
+			$wallet->coin_id = $request->coin_id;
+			$wallet->balance = $request->amount;
+			$wallet->save();
+		}
 		return [
 			'code' => 200,
 			'message' => 'Balance updated',

@@ -35,14 +35,13 @@ class PageService
 	{
 		$validator = Validator::make($request->all(), [
 			'title' => 'required|string|max:255',
-			'content' => 'required|string',
-			'slug' => 'nullable|string|max:255|unique:pages',
+			'content' => 'required|string'
 		]);
 		if ($validator->fails()) {
 			return [
 				'code' => 422,
 				'message' => 'Validation error',
-				'data' => $validator->errors()
+				'errors' => $validator->errors()
 			];
 		}
 		$page = Page::create([
@@ -85,14 +84,13 @@ class PageService
 	{
 		$validator = Validator::make($request->all(), [
 			'title' => 'required|string|max:255',
-			'content' => 'required|string',
-			'slug' => 'nullable|string|max:255|unique:pages,slug,' . $page->id,
+			'content' => 'required|string'
 		]);
 		if ($validator->fails()) {
 			return [
 				'code' => 422,
 				'message' => 'Validation error',
-				'data' => $validator->errors()
+				'errors' => $validator->errors()
 			];
 		}
 		$page->update([
@@ -131,14 +129,14 @@ class PageService
 	 * 
 	 * @return An array with a code, message, and data.
 	 */
-	public function publish($page)
+	public function active($page)
 	{
 		$page->update([
 			'is_published' => !$page->is_published
 		]);
 		return [
 			'code' => 200,
-			'message' => 'Page published successfully',
+			'message' => 'Page status updated successfully',
 			'data' => $page
 		];
 	}
