@@ -220,11 +220,11 @@ class UserService
 			$wallet->balance = $request->amount;
 			$wallet->save();
 		} else {
-			$wallet = new CoinWallet;
-			$wallet->user_id = $user->id;
-			$wallet->coin_id = $request->coin_id;
-			$wallet->balance = $request->amount;
-			$wallet->save();
+			CoinWallet::create([
+				'user_id' => $user->id,
+				'coin_id' => $request->coin_id,
+				'balance' => $request->amount,
+			]);
 		}
 		return [
 			'code' => 200,
