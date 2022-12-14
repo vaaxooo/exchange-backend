@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'verification_code',
         'recovery_code',
         'ban',
+        'phone',
     ];
 
     /**

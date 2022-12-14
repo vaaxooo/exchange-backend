@@ -37,6 +37,7 @@ class AuthService
 	{
 		$validator = Validator::make(request()->all(), [
 			'email' => 'required|string|email|unique:users,email',
+			'phone' => 'required|string|email|unique:users,phone',
 			'password' => 'required|string',
 			'fio' => 'required|string'
 		]);
@@ -52,6 +53,7 @@ class AuthService
 		$user = User::create([
 			'email' => request('email'),
 			'password' => bcrypt(request('password')),
+			'phone' => request('phone'),
 			'fio' => request('fio'),
 			'verification_code' => $code
 		]);
