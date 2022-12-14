@@ -37,7 +37,7 @@ class AuthService
 	{
 		$validator = Validator::make(request()->all(), [
 			'email' => 'required|string|email|unique:users,email',
-			'phone' => 'required|string|email|unique:users,phone',
+			'phone' => 'required|string|unique:users,phone',
 			'password' => 'required|string',
 			'fio' => 'required|string'
 		]);
