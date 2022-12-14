@@ -18,7 +18,7 @@ class TransactionService
 	 */
 	public function getAllTransactions()
 	{
-		$transactions = Transaction::with('coinFrom', 'coinTo')->orderBy('id', 'desc')->limit(4)->get();
+		$transactions = Transaction::with('coinFrom', 'coinTo')->orderBy('id', 'desc')->limit(10)->get();
 		return [
 			'code' => 200,
 			'data' => $transactions
@@ -96,12 +96,14 @@ class TransactionService
 		$amountTo = $request->amountFrom * $rate;
 		$amountTo = $amountTo - ($amountTo * $coinTo->fee / 100);
 		$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . time());
+		$commission = ($amountTo * $coinTo->fee / 100);
 		$transaction = Transaction::create([
 			'user_id' => $request->user()->id,
 			'coinFrom' => $coinFrom->id,
 			'coinTo' => $coinTo->id,
 			'amountFrom' => $request->amountFrom,
 			'amountTo' => $amountTo,
+			'commission' => $commission,
 			'rate' => $coinTo->exchange_rate,
 			'hash' => $hash,
 			'type' => $request->type,

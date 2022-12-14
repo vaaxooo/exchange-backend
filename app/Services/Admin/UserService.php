@@ -58,7 +58,7 @@ class UserService
 	{
 		$validator = Validator::make($request->all(), [
 			'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-			'password' => 'nullable|string|min:8',
+			'fio' => 'required|string|max:255',
 		]);
 		if ($validator->fails()) {
 			return [
@@ -67,9 +67,7 @@ class UserService
 			];
 		}
 		$user->email = $request->email;
-		if ($request->password) {
-			$user->password = bcrypt($request->password);
-		}
+		$user->fio = $request->fio;
 		$user->save();
 		return [
 			'code' => 200,

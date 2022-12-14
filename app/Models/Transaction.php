@@ -16,6 +16,7 @@ class Transaction extends Model
         'amountFrom',
         'amountTo',
         'rate',
+        'commission',
         'status',
         'hash',
         'type',
