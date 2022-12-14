@@ -7,6 +7,8 @@ use App\Models\CoinWallet;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Validator;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use App\Models\PaymentMethod;
+use App\Models\User;
 
 class TransactionService
 {
@@ -107,16 +109,32 @@ class TransactionService
 			'rate' => $coinTo->exchange_rate,
 			'hash' => $hash,
 			'type' => $request->type,
+			'status' => 'success'
 		]);
 
 		if ($request->type == 'buy') {
 			$request->user()->update([
 				'balance' => $request->user()->balance - $request->amountFrom
 			]);
+			$coin_wallet = CoinWallet::where('user_id', $request->user()->id)->where('coin_id', $coinTo->id)->first();
+			if ($coin_wallet) {
+				$coin_wallet->update([
+					'balance' => $coin_wallet->balance + $amountTo
+				]);
+			} else {
+				CoinWallet::create([
+					'user_id' => $request->user()->id,
+					'coin_id' => $coinTo->id,
+					'balance' => $amountTo
+				]);
+			}
 		}
 		if ($request->type == 'sell') {
 			CoinWallet::where('user_id', $request->user()->id)->where('coin_id', $coinFrom->id)->update([
 				'balance' => $wallet->balance - $request->amountFrom
+			]);
+			User::where('id', $request->user()->id)->update([
+				'balance' => $request->user()->balance + $amountTo
 			]);
 		}
 
