@@ -112,7 +112,7 @@ class CoinService
 		}
 		$coin->update([
 			'name' => $request->name,
-			'symbol' => strtoupper($request->symbol),
+			'symbol' => strtolower($request->symbol),
 			'exchange_rate' => $request->exchange_rate,
 			'fee' => $request->fee,
 			'reserve' => $request->reserve,
