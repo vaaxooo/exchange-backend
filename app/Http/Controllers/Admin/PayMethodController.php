@@ -44,7 +44,7 @@ class PayMethodController extends Controller
      */
     public function store(Request $request)
     {
-        $this->payMethodService->store($request);
+        return response()->json($this->payMethodService->store($request));
     }
 
     /**

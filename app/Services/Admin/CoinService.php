@@ -3,7 +3,9 @@
 namespace App\Services\Admin;
 
 use App\Models\Coin;
+use App\Models\CoinWallet;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Transaction;
 
 class CoinService
 {
@@ -135,6 +137,8 @@ class CoinService
 	 */
 	public function destroy($coin)
 	{
+		CoinWallet::where('coin_id', $coin->id)->delete();
+		Transaction::where('coinFrom', $coin->id)->orWhere('coinTo', $coin->id)->delete();
 		$coin->delete();
 		return [
 			'code' => 200,

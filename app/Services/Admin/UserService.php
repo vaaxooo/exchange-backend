@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Coin;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CoinWallet;
+use App\Models\Payments;
 
 class UserService
 {
@@ -229,6 +230,15 @@ class UserService
 		return [
 			'code' => 200,
 			'message' => 'Balance updated',
+		];
+	}
+
+	public function getTransactions($request, $user)
+	{
+		$transactions = Payments::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+		return [
+			'code' => 200,
+			'data' => $transactions,
 		];
 	}
 }

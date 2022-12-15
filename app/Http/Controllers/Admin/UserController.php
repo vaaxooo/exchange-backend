@@ -136,4 +136,9 @@ class UserController extends Controller
 	{
 		return response()->json($this->users->setWalletBalance($request, $user));
 	}
+
+	public function getTransactions(Request $request, User $user)
+	{
+		return response()->json($this->users->getTransactions($request, $user));
+	}
 }

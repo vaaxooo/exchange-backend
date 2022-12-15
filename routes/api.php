@@ -49,6 +49,7 @@ Route::group(['middleware' => ['api']], function ($route) {
             Route::resource('coins', '\App\Http\Controllers\Admin\CoinController');
 
             # USERS
+            Route::get('users/{user}/transactions', '\App\Http\Controllers\Admin\UserController@getTransactions');
             Route::get('users/{user}/wallets', '\App\Http\Controllers\Admin\UserController@getWallets');
             Route::post('users/{user}/wallets/set-balance', '\App\Http\Controllers\Admin\UserController@setWalletBalance');
 

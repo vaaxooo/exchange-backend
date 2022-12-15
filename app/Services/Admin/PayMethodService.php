@@ -16,7 +16,7 @@ class PayMethodService
 	 */
 	public function index()
 	{
-		$methods = PayMethod::get();
+		$methods = PayMethod::orderBy('id', 'desc')->get();
 		return [
 			'code' => 200,
 			'data' => $methods
