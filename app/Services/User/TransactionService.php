@@ -20,7 +20,7 @@ class TransactionService
 	 */
 	public function getAllTransactions()
 	{
-		$transactions = Transaction::with('coinFrom', 'coinTo');
+		$transactions = Transaction::with('coinFrom', 'coinTo')->where('user_id', auth()->user()->id);
 
 		if (request()->type === 'arbitrage') {
 			$transactions = $transactions->where('exchange', '!=', NULL);
