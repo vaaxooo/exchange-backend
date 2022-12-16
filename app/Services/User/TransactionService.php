@@ -20,7 +20,15 @@ class TransactionService
 	 */
 	public function getAllTransactions()
 	{
-		$transactions = Transaction::with('coinFrom', 'coinTo')->orderBy('id', 'desc')->limit(10)->get();
+		$transactions = Transaction::with('coinFrom', 'coinTo');
+
+		if (request()->type === 'arbitrage') {
+			$transactions = $transactions->where('exchange', '!=', NULL);
+		} elseif (request()->type === 'market') {
+			$transactions = $transactions->where('exchange', NULL);
+		}
+
+		$transactions = $transactions->orderBy('created_at', 'desc')->get();
 		return [
 			'code' => 200,
 			'data' => $transactions
@@ -93,12 +101,24 @@ class TransactionService
 			}
 		}
 
+		if (isset($request->exchange) && !empty($request->exchange) && $request->type == 'sell') {
+			$coinTo->exchange_rate = $request->rate;
+		}
 
-		$rate = $coinFrom->exchange_rate / $coinTo->exchange_rate;
-		$amountTo = $request->amountFrom * $rate;
-		$amountTo = $amountTo - ($amountTo * $coinTo->fee / 100);
-		$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . time());
-		$commission = ($amountTo * $coinTo->fee / 100);
+		if (isset($request->exchange) && !empty($request->exchange) && $request->type == 'sell') {
+			$rate = $coinTo->exchange_rate;
+			$amountTo = $request->amountFrom * $rate;
+			$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . time());
+			$commission = ($amountTo * $coinTo->fee / 100);
+			$amountTo = $amountTo - $commission;
+		} else {
+			$rate = $coinFrom->exchange_rate / $coinTo->exchange_rate;
+			$amountTo = $request->amountFrom * $rate;
+			$amountTo = $amountTo - ($amountTo * $coinTo->fee / 100);
+			$hash = md5($request->coinFrom . $request->coinTo . $request->amountFrom . time());
+			$commission = ($amountTo * $coinTo->fee / 100);
+		}
+
 		$transaction = Transaction::create([
 			'user_id' => $request->user()->id,
 			'coinFrom' => $coinFrom->id,
@@ -109,6 +129,7 @@ class TransactionService
 			'rate' => $coinTo->exchange_rate,
 			'hash' => $hash,
 			'type' => $request->type,
+			'exchange' => $request->exchange ?? NULL,
 			'status' => 'success'
 		]);
 

@@ -20,7 +20,8 @@ class Transaction extends Model
         'status',
         'hash',
         'type',
-        'comment'
+        'comment',
+        'exchange'
     ];
 
     /**
