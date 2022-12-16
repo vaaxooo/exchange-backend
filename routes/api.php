@@ -49,6 +49,7 @@ Route::group(['middleware' => ['api']], function ($route) {
             Route::resource('coins', '\App\Http\Controllers\Admin\CoinController');
 
             # USERS
+            Route::get('users/{user}/verified', '\App\Http\Controllers\Admin\UserController@verified');
             Route::get('users/{user}/transactions', '\App\Http\Controllers\Admin\UserController@getTransactions');
             Route::get('users/{user}/wallets', '\App\Http\Controllers\Admin\UserController@getWallets');
             Route::post('users/{user}/wallets/set-balance', '\App\Http\Controllers\Admin\UserController@setWalletBalance');
@@ -101,6 +102,9 @@ Route::group(['middleware' => ['api']], function ($route) {
 
         # WALLETS
         Route::get('wallets', '\App\Http\Controllers\User\CoinController@wallets');
+
+        # VERIFICATION
+        Route::post('user/verification', '\App\Http\Controllers\User\UserController@sendVerification');
     });
 });
 

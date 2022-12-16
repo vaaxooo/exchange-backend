@@ -137,8 +137,29 @@ class UserController extends Controller
 		return response()->json($this->users->setWalletBalance($request, $user));
 	}
 
+	/**
+	 * It returns a JSON response of the transactions for the user
+	 * 
+	 * @param Request request The request object
+	 * @param User user The user object that is being passed in from the route.
+	 * 
+	 * @return A JSON response of the transactions for the user.
+	 */
 	public function getTransactions(Request $request, User $user)
 	{
 		return response()->json($this->users->getTransactions($request, $user));
+	}
+
+	/**
+	 * It returns a json response of the verified function in the UsersRepository.
+	 * 
+	 * @param Request request The request object
+	 * @param User user The user object that was passed to the route.
+	 * 
+	 * @return A JSON response.
+	 */
+	public function verified(Request $request, User $user)
+	{
+		return response()->json($this->users->verified($user));
 	}
 }

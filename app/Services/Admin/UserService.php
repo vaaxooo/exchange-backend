@@ -7,6 +7,7 @@ use App\Models\Coin;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CoinWallet;
 use App\Models\Payments;
+use App\Models\Verification;
 
 class UserService
 {
@@ -40,6 +41,7 @@ class UserService
 	 */
 	public function show($user)
 	{
+		$user->verification = Verification::where('user_id', $user->id)->first();
 		return [
 			'code' => 200,
 			'data' => $user,
@@ -233,12 +235,37 @@ class UserService
 		];
 	}
 
+	/**
+	 * It gets all the transactions for a user
+	 * 
+	 * @param request The request object
+	 * @param user The user object that is currently logged in.
+	 * 
+	 * @return An array with a code and data.
+	 */
 	public function getTransactions($request, $user)
 	{
 		$transactions = Payments::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 		return [
 			'code' => 200,
 			'data' => $transactions,
+		];
+	}
+
+	/**
+	 * It toggles the `verified` property of a user
+	 * 
+	 * @param user The user object that you want to update.
+	 * 
+	 * @return An array with a code and a message.
+	 */
+	public function verified($user)
+	{
+		$user->verified = !$user->verified;
+		$user->save();
+		return [
+			'code' => 200,
+			'message' => 'Verification status updated',
 		];
 	}
 }

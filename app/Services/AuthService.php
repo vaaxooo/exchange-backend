@@ -8,7 +8,7 @@ use App\Mail\RecoveryPassword;
 use App\Mail\VerifyEmail;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\Verification;
 
 class AuthService
 {
@@ -269,10 +269,17 @@ class AuthService
 	 */
 	public function me()
 	{
+		$user = User::where('email', auth()->user()->email)->first();
+		$verification = Verification::where('user_id', $user->id)->first();
+		if ($verification) {
+			$user->verification = true;
+		} else {
+			$user->verification = false;
+		}
 		return [
 			'code' => 200,
 			'status' => 'success',
-			'user' => auth()->user()
+			'user' => $user
 		];
 	}
 
