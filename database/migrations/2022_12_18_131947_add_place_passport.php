@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('verification', function (Blueprint $table) {
+        Schema::table('verifications', function (Blueprint $table) {
             $table->string('place_passport')->nullable();
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('verification', function (Blueprint $table) {
+        Schema::table('verifications', function (Blueprint $table) {
             //
         });
     }
