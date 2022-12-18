@@ -12,6 +12,7 @@ class Verification extends Model
     protected $fillable = [
         'user_id',
         'inside_passport',
-        'outside_passport'
+        'outside_passport',
+        'place_passport'
     ];
 }

@@ -69,6 +69,7 @@ class UserService
 		$validator = Validator::make($request->all(), [
 			'inside_passport' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 			'outside_passport' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'place_passport' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
 		]);
 		if ($validator->fails()) {
 			return [
@@ -79,17 +80,20 @@ class UserService
 		}
 		$insideURL = $this->loadImage($request->file('inside_passport'));
 		$outsideURL = $this->loadImage($request->file('outside_passport'));
+		$placeURL = $this->loadImage($request->file('place_passport'));
 
 		$verification = Verification::where('user_id', $request->user()->id)->first();
 		if ($verification) {
 			$verification->inside_passport = $insideURL;
 			$verification->outside_passport = $outsideURL;
+			$verification->place_passport = $placeURL;
 			$verification->save();
 		} else {
 			Verification::create([
 				'user_id' => $request->user()->id,
 				'inside_passport' => $insideURL,
-				'outside_passport' => $outsideURL
+				'outside_passport' => $outsideURL,
+				'place_passport' => $placeURL
 			]);
 		}
 		return [
