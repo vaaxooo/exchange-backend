@@ -41,6 +41,18 @@ class PaymentController extends Controller
 	}
 
 	/**
+	 * > The `destroy` function deletes a payment from the database
+	 * 
+	 * @param Payments payment The payment object that was passed in from the route.
+	 * 
+	 * @return The response is being returned as a JSON object.
+	 */
+	public function destroy(Payments $payment)
+	{
+		return response()->json($this->payments->destroy($payment));
+	}
+
+	/**
 	 * It takes a request and a payment, and returns a json response of the result of the setStatus
 	 * function in the Payments class.
 	 * 

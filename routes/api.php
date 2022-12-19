@@ -71,6 +71,7 @@ Route::group(['middleware' => ['api']], function ($route) {
             Route::post('payments/{payment}/set-status', '\App\Http\Controllers\Admin\PaymentController@setStatus');
             Route::get('payments', '\App\Http\Controllers\Admin\PaymentController@getDeposits');
             Route::get('payments/{payment}', '\App\Http\Controllers\Admin\PaymentController@show');
+            Route::delete('payments/{payment}', '\App\Http\Controllers\Admin\PaymentController@destroy');
 
             # CONTACTS
             Route::resource('contacts', '\App\Http\Controllers\Admin\ContactController');

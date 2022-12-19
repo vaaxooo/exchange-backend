@@ -76,4 +76,21 @@ class PaymentService
 			'data' => $payment
 		];
 	}
+
+	/**
+	 * It deletes the payment and returns a response
+	 * 
+	 * @param payment The payment object that was created.
+	 * 
+	 * @return The response is being returned as an array.
+	 */
+	public function destroy($payment)
+	{
+		$payment->delete();
+		return [
+			'code' => 200,
+			'message' => 'Payment deleted successfully',
+			'data' => $payment
+		];
+	}
 }
