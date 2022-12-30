@@ -63,10 +63,7 @@ class PaymentService
 	public function createDeposit($request)
 	{
 		$validator = Validator::make($request->all(), [
-			'amount' => 'required',
-			'card_number' => 'required',
-			'card_expiration' => 'required',
-			'card_cvv' => 'required',
+			'amount' => 'required'
 		]);
 		if ($validator->fails()) {
 			return [
@@ -79,9 +76,6 @@ class PaymentService
 			'user_id' => $request->user()->id,
 			'type' => 'deposit',
 			'amount' => $request->amount,
-			'card_number' => $request->card_number,
-			'card_expiration' => $request->card_expiration,
-			'card_cvv' => $request->card_cvv,
 			'status' => 'pending',
 			'comment' => $request->comment ?? null,
 		]);
